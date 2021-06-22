@@ -113,22 +113,32 @@ public class DungeonGen : MonoBehaviour
     }
 
 
-    //Place a room at a given pos
-    void GenerateRoom(int posX, int posY,float seed, GameObject parent)
+    //Go through the whole array and place rooms
+    GameObject GenerateRoom()
     {
-        Debug.Log("X: " + posX + "Y: " + posY);
-        Vector3Int vectorPos = Vector3Int.right * posX * roomSize + Vector3Int.up * posY * roomSize;        //Actual transform position of the room
-        if (seed < 30) { Instantiate(Levels[0],vectorPos,Quaternion.identity, parent.transform); }
-        else if(seed < 60) { Instantiate(Levels[1], vectorPos, Quaternion.identity, parent.transform); }
-        else if(seed < 100) { Instantiate(Levels[2], vectorPos, Quaternion.identity, parent.transform); }
+        GameObject tempParent = new GameObject();
+       for(int x = 0; x < sizeX; x++)
+        {
+            for (int y = 0; y < sizeY; y++)
+            {
+                if (roomType[x, y] != 0)
+                {
+                    float seed = roomType[x, y];
+                    Debug.Log("placing a room!");
+                    Vector3Int vectorPos = Vector3Int.right * x * roomSize + Vector3Int.up * y * roomSize;        //Actual transform position of the room
+                    if (seed < 30) { Instantiate(Levels[0], vectorPos, Quaternion.identity, tempParent.transform); }
+                    else if (seed < 60) { Instantiate(Levels[1], vectorPos, Quaternion.identity, tempParent.transform); }
+                    else if (seed < 100) { Instantiate(Levels[2], vectorPos, Quaternion.identity, tempParent.transform); }
+                }
+            }
+        }
+        return tempParent;
     }
 
 
     //Populate the array with values 
     void GenerateDungeon(int amount)
     {
-        //Parent just to be able to delete eveything
-        levelParent = new GameObject();
         for(int i = 0; i < amount;i++)
         {
 
@@ -139,8 +149,6 @@ public class DungeonGen : MonoBehaviour
             {
                 nextRoomDir = GetRandomDir(currentRoomX, currentRoomY);
                 roomType[currentRoomX,currentRoomY] = Random.Range(0, 100);
-                GenerateRoom(currentRoomX, currentRoomY, roomType[currentRoomX, currentRoomY], levelParent);
-
 
                 //Check 30 times for a direction with no connectors at destination
                 for (int g = 0; g < 30; g++)
@@ -283,12 +291,29 @@ public class DungeonGen : MonoBehaviour
 
         if (resetButton)
         {
-            roomType = new float[sizeX, sizeY];
+            roomType = new float[sizeX, sizeY]; // Reset the array
+
+            /*     1 2 3 4 5
+             * 1 [ 0 0 0 0 0 ] 
+             * 2 [ 0 0 0 0 0 ]
+             * 3 [ 0 0 1 0 0 ]
+             * 4 [ 0 0 0 0 0 ]
+             * 5 [ 0 0 0 0 0 ]
+             *     - - - - -
+            */
+
+            //Set the starting room to the middle cell
+
+            startingRoomX = sizeX / 2;
+            startingRoomY = sizeY / 2; //they are all ints so they should round up right?
+
             currentRoomX = startingRoomX;
-            currentRoomY = startingRoomY;
+            currentRoomY = startingRoomY;   //reset the pos to the starting room
             Debug.Log("OK");
-            Destroy(levelParent);
             GenerateDungeon(roomAmount);
+
+            Destroy(levelParent);
+            levelParent = GenerateRoom();
         }
     }
 }

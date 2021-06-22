@@ -250,6 +250,7 @@ public class DungeonGen : MonoBehaviour
 
                 //there is no fucking way to place a room
                 //getting the fuck away from level creation for now
+                Debug.Log("FUCKFUCKFUCKFUCKFUCKFUCK");
                 break;
 
 

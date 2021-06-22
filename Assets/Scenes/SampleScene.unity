@@ -211,9 +211,9 @@ MonoBehaviour:
   - {fileID: 4112082009329096719, guid: 1a243483672a07e42bb335b1cf1d92b6, type: 3}
   sizeX: 100
   sizeY: 100
-  roomAmount: 30
-  startingRoomX: 30
-  startingRoomY: 30
+  roomAmount: 100
+  startingRoomX: 50
+  startingRoomY: 50
   currentRoomX: 0
   currentRoomY: 0
 --- !u!1 &519420028

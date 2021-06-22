@@ -28,77 +28,83 @@ public class DungeonGen : MonoBehaviour
         currentRoomY = startingRoomY;
     }
 
+
+    //Check how many rooms is the given room connected to
     int CheckConnectedAmount(int posX, int posY)
     {
         int connectors = 0;
 
-        if (posX > 0)
+        if (posX > 0)   
         {
-            if (roomType[posX - 1, posY] > 0) connectors++;
+            if (roomType[posX - 1, posY] > 0) connectors++;     //is there a room to the left
         }
 
         if (posX < sizeX)
         {
-            if (roomType[posX + 1, posY] > 0) connectors++;
+            if (roomType[posX + 1, posY] > 0) connectors++;     //is there a room to the right
         }
 
         if (posY > 0)
-        {
-            if (roomType[posX, posY - 1] > 0) connectors++;
+        {       
+            if (roomType[posX, posY - 1] > 0) connectors++;     //is there a room to the bottom
         }
 
         if (posY < sizeY)
         {
-            if (roomType[posX, posY + 1] > 0) connectors++;
+            if (roomType[posX, posY + 1] > 0) connectors++;     //is there a room to the above
         }
 
         return connectors;
     }
 
+
+    //Get a random Vector3Int direction and an Int that is a direction
     Vector3Int GetRandomDir(int posX, int posY)
     {
         Vector3Int dir = Vector3Int.zero;
         bool done = true;
         while (done)
         {
+
+            //Select a random direction
             dirInt = Random.Range(0, 4);
             switch (dirInt)
             {
 
                 //left
                 case 0:
-                    if (posX == 0) break;
-                    if (roomType[posX - 1, posY] > 0) break;
-                    else dir = Vector3Int.left;
+                    if (posX == 0) break;                           //Is this the edge of the array?
+                    if (roomType[posX - 1, posY] > 0) break;        //Is the room in the given direction taken?
+                    else dir = Vector3Int.left;                     //If yes return this direction
                     done = false;
                     break;
 
 
                 //right
                 case 1:
-                    if (posX == sizeX - 1) break;
-                    if (roomType[posX + 1, posY] > 0) break;
-                    else dir = Vector3Int.right;
-                    done = false;
+                    if (posX == sizeX - 1) break;                   //Is this the edge of the array?
+                    if (roomType[posX + 1, posY] > 0) break;        //Is the room in the given direction taken?
+                    else dir = Vector3Int.right;                    //If yes return this direction
+                    done = false;   
                     break;
 
                 //top
                 case 2:
-                    if (posY == sizeY - 1) break;
-                    if (roomType[posX, posY + 1] > 0) break;
-                    else dir = Vector3Int.up;
+                    if (posY == sizeY - 1) break;                   //Is this the edge of the array?
+                    if (roomType[posX, posY + 1] > 0) break;        //Is the room in the given direction taken?
+                    else dir = Vector3Int.up;                       
                     done = false;
                     break;
 
                 //down
                 case 3:
-                    if (posY == 0) break;
-                    if (roomType[posX, posY - 1] > 0) break;
-                    else dir = Vector3Int.down;
+                    if (posY == 0) break;                           //Is this the edge of the array?
+                    if (roomType[posX, posY - 1] > 0) break;        //Is the room in the given direction taken?
+                    else dir = Vector3Int.down;                     //If yes return this direction
                     done = false;
                     break;
 
-                default:
+                default:                                            //this is just in case
                     break;
 
             }
@@ -106,23 +112,30 @@ public class DungeonGen : MonoBehaviour
         return dir;
     }
 
+
+    //Place a room at a given pos
     void GenerateRoom(int posX, int posY,float seed, GameObject parent)
     {
         Debug.Log("X: " + posX + "Y: " + posY);
-        Vector3Int vectorPos = Vector3Int.right * posX * roomSize + Vector3Int.up * posY * roomSize;
+        Vector3Int vectorPos = Vector3Int.right * posX * roomSize + Vector3Int.up * posY * roomSize;        //Actual transform position of the room
         if (seed < 30) { Instantiate(Levels[0],vectorPos,Quaternion.identity, parent.transform); }
         else if(seed < 60) { Instantiate(Levels[1], vectorPos, Quaternion.identity, parent.transform); }
         else if(seed < 100) { Instantiate(Levels[2], vectorPos, Quaternion.identity, parent.transform); }
     }
 
+
+    //Populate the array with values 
     void GenerateDungeon(int amount)
     {
+        //Parent just to be able to delete eveything
         levelParent = new GameObject();
         for(int i = 0; i < amount;i++)
         {
+
+            //check if this room has 2 connectors
             connectedRooms = CheckConnectedAmount(currentRoomX, currentRoomY);
-                
-         //   if(connectedRooms <2)
+
+            if(connectedRooms <2)
             {
                 nextRoomDir = GetRandomDir(currentRoomX, currentRoomY);
                 roomType[currentRoomX,currentRoomY] = Random.Range(0, 100);
@@ -256,10 +269,10 @@ public class DungeonGen : MonoBehaviour
 
             loopbreak:;
             }
-          /*  else
+            else
             {
                 break;
-            }*/
+            }
         }
     }
 
